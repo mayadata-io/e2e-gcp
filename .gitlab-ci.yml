@@ -2,6 +2,7 @@ stages:
   - cluster-setup
   - infra-setup
   - stateful-apps-deploy
+  - apps-loadgen  
   - chaos-test
   - cleanup
 gcp-cluster:
@@ -46,7 +47,7 @@ cassandra-jiva:
   dependencies:
     - openebs_gcp_deploy
 
-mongo-jiva:
+mongodb-jiva:
   stage: stateful-apps-deploy
   image: atulabhi/kops:v8
   script:
@@ -72,6 +73,38 @@ postgres-jiva:
     - ./script/postgres-app-deploy
   dependencies:
     - openebs_gcp_deploy
+
+cassandra-loadgen:
+  image: atulabhi/kops:v8
+  stage: apps-loadgen
+  script: 
+   - echo "jobs-Gcp-Started"
+   - chmod 775 ./script/cassandra-loadgen
+   - ./script/cassandra-loadgen
+  dependencies:
+   - openebs_gcp_deploy       
+     
+
+
+mongodb-loadgen:
+  image: atulabhi/kops:v8
+  stage: apps-loadgen
+  script: 
+   - echo "jobs-Gcp-Started"
+   - chmod 775 ./script/mongodb-loadgen
+   - ./script/mongodb-loadgen
+  dependencies:
+   - openebs_gcp_deploy
+
+percona-loadgen:
+  image: atulabhi/kops:v8
+  stage: apps-loadgen
+  script: 
+   - echo "jobs-Gcp-Started"
+   - chmod 775 ./script/percona-loadgen
+   - ./script/percona-loadgen
+  dependencies:
+   - openebs_gcp_deploy  
      
 Litmus-Chaos:
   stage: chaos-test
